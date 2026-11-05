@@ -1,0 +1,28 @@
+name: update legal builds
+
+on:
+  repository_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v7
+
+      - name: checkout legal-mods
+        uses: actions/checkout@v7
+        with:
+          repository: Minecraft-Java-Edition-Speedrunning/legal-mods
+          path: legal-mods
+
+      - name: run update script and commit changes
+        run: |
+          python get_hashes.py
+          git add legal-builds.csv
+          git config user.name "MinecraftSpeedrunning"
+          git config user.email "staff@minecraftspeedrunning.com"
+          (git commit -m "update hashes" && git push) || echo "no changes to commit"
